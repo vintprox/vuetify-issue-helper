@@ -9,13 +9,7 @@
     "stage-2"
   ],
   "plugins": [
-    "transform-runtime",
-    "add-filehash",
-    ["transform-imports", {
-        "vuetify": {
-            "transform": "vuetify/src/components/${member}"
-        }
-    }]
+    "transform-runtime"
   ],
   "env": {
     "test": {

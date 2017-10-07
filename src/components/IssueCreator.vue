@@ -1,8 +1,10 @@
 <template>
-  <div>
-    <info></info>
-    <new-issue-form></new-issue-form>
-  </div>
+  <v-container>
+    <v-layout row wrap>
+      <info></info>
+      <new-issue-form></new-issue-form>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
