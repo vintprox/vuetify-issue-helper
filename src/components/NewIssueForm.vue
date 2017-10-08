@@ -16,8 +16,11 @@
           v-model="newIssue.title"
           label="Issue Title"
           :rules="[rules.required]"
+          @change="searchIssues"
         ></v-text-field>
-        <!-- TODO: Show list of possible issues based on title -->
+        <v-slide-y-transition>
+          <PossibleIssues v-if="!isError && possibleIssues.length" :issues="possibleIssues"></PossibleIssues>
+        </v-slide-y-transition>
       </v-flex>
     </v-layout>
     <v-slide-y-transition>
@@ -118,7 +121,6 @@
             v-model="newIssue.whatsAvoided"
             label="What potential bugs and edge cases does it help to avoid?"
             :rows="3"
-            :rules="[rules.required]"
             textarea></v-text-field>
         </v-flex>
       </v-layout>
@@ -131,11 +133,16 @@
 </template>
 
 <script>
-import github from '@/lib/axios'
+import vuetifyRepo from '@/lib/axios'
 import axios from 'axios'
+
+import PossibleIssues from './PossibleIssues'
 
 export default {
   name: 'new-issue-form',
+  components: {
+    PossibleIssues
+  },
   data () {
     return {
       isValid: false,
@@ -152,6 +159,8 @@ export default {
           value: 'feature'
         }
       ],
+      isError: false,
+      possibleIssues: [],
       operatingSystems: [
         'Mac OSX',
         'Windows',
@@ -165,7 +174,7 @@ export default {
         'Internet Explorer',
         'Microsoft Edge'
       ],
-      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" target="_blank">Codepen</a> or <a href="https://www.jsfiddle.com" target="_blank">JSFiddle</a>',
+      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" target="_blank">JSFiddle</a>, or <a href="https://codesandbox.io/s/vue">CodeSandbox</a>',
       newIssue: {
         type: '',
         title: '',
@@ -189,7 +198,7 @@ export default {
   },
   mounted () {
     let _this = this
-    github.get('/releases')
+    vuetifyRepo.get('/releases')
       .then(function (response) {
         _this.vuetifyVersions = response.data.map(function (release) {
           return release.tag_name
@@ -202,6 +211,23 @@ export default {
           return release.tag_name
         })
       })
+  },
+  methods: {
+    searchIssues () {
+      let _this = this
+      if (!this.newIssue.title) return
+
+      axios.get('/api', {
+        params: {
+          q: this.newIssue.title
+        }
+      }).then(function (response) {
+        _this.possibleIssues = response.data.issues
+        _this.isError = false
+      }).catch(function (response) {
+        _this.isError = true
+      })
+    }
   },
   computed: {
     vuetifyVersionHint () {
@@ -217,8 +243,5 @@ export default {
 <style scoped>
 .full-width {
   width: 100%;
-}
-.right {
-  float:right;
 }
 </style>

@@ -1,20 +1,20 @@
 <template>
   <v-container>
     <v-layout row wrap>
-      <info></info>
-      <new-issue-form></new-issue-form>
+      <InformationBox></InformationBox>
+      <NewIssueForm></NewIssueForm>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import Info from './Info'
+import InformationBox from './InformationBox'
 import NewIssueForm from './NewIssueForm'
 
 export default {
   name: 'issue-creator',
   components: {
-    Info,
+    InformationBox,
     NewIssueForm
   }
 }
