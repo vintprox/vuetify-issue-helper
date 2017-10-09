@@ -61,7 +61,7 @@
           <v-text-field
             v-model="newIssue.link"
             label="Reproduction Link"
-            :rules="[rules.required]"
+            :rules="[rules.required, rules.validRepro]"
             :hint="linkHint"
             :persistent-hint="true"></v-text-field>
         </v-flex>
@@ -92,7 +92,6 @@
           <v-text-field
             v-model="newIssue.other"
             label="Comments"
-            :rules="[rules.required]"
             :rows="3"
             textarea></v-text-field>
         </v-flex>
@@ -121,12 +120,69 @@
             v-model="newIssue.whatsAvoided"
             label="What potential bugs and edge cases does it help to avoid?"
             :rows="3"
+            :rules="[rules.required]"
             textarea></v-text-field>
         </v-flex>
       </v-layout>
     </v-slide-y-transition>
     <v-layout row justify-center>
-      <v-btn color="primary" :disabled="!isValid" v-if="newIssue.type">Preview</v-btn>
+      <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
+      <v-dialog width="640" v-model="isPreviewing">
+        <v-card>
+          <v-card-title class="headline">New Issue</v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout row wrap v-if="newIssue.type === 'bug'">
+                <v-flex xs12>
+                  <div class="title">Versions and Environment</div>
+                  <div class="body text-xs-left">Vuetify Version: {{newIssue.vuetifyVersion}}</div>
+                  <div class="body text-xs-left">Vue Version: {{newIssue.vueVersion}}</div>
+                  <div class="body text-xs-left">Browsers: {{newIssue.browsers.join(', ')}}</div>
+                  <div class="body text-xs-left">Operating Systems: {{newIssue.os.join(', ')}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Steps to Reproduce</div>
+                  <div class="body text-xs-left">{{newIssue.steps}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Expected Behavior</div>
+                  <div class="body text-xs-left">{{newIssue.expected}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Actual Behavior</div>
+                  <div class="body text-xs-left">{{newIssue.actual}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Reproduction Link</div>
+                  <div class="body text-xs-left"><a href="newIssue.link" target="_blank">{{newIssue.link}}</a></div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Comments</div>
+                  <div class="body text-xs-left">{{newIssue.other}}</div>
+                </v-flex>
+              </v-layout>
+              <v-layout row wrap v-if="newIssue.type === 'feature'">
+                <v-flex xs12>
+                  <div class="title">New Functionality</div>
+                  <div class="body text-xs-left">{{newIssue.whatsNew}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Improvements</div>
+                  <div class="body text-xs-left">{{newIssue.whatsImproved}}</div>
+                </v-flex>
+                <v-flex xs12>
+                  <div class="title">Bugs or Edge Cases it Helps Avoid</div>
+                  <div class="body text-xs-left">{{newIssue.whatsAvoided}}</div>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat tag="a" :href="getGithubUrl()">Create</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-layout>
   </v-container>
 </v-form>
@@ -134,7 +190,9 @@
 
 <script>
 import vuetifyRepo from '@/lib/axios'
+import markdownGenerator from '@/lib/markdownGenerator'
 import axios from 'axios'
+import { format } from 'url'
 
 import PossibleIssues from './PossibleIssues'
 
@@ -146,9 +204,11 @@ export default {
   data () {
     return {
       isValid: false,
+      isPreviewing: false,
       rules: {
         required: (v) => !!v || 'This field is required',
-        requiredMultiple: (v) => !!v.length || 'This field is required'
+        requiredMultiple: (v) => !!v.length || 'This field is required',
+        validRepro: (v) => /.*?(github|codepen|jsfiddle|codesandbox).*?/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
       },
       types: [
         {
@@ -174,16 +234,16 @@ export default {
         'Internet Explorer',
         'Microsoft Edge'
       ],
-      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" target="_blank">JSFiddle</a>, or <a href="https://codesandbox.io/s/vue">CodeSandbox</a>',
+      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue">CodeSandbox</a> or a github repo',
       newIssue: {
         type: '',
         title: '',
         vueVersion: '',
         vuetifyVersion: '',
-        os: '',
-        browsers: '',
+        os: [],
+        browsers: [],
         link: '',
-        steps: '1.\n2.\n3.\n4.\n5.',
+        steps: '',
         expected: '',
         actual: '',
         other: '',
@@ -227,6 +287,30 @@ export default {
       }).catch(function (response) {
         _this.isError = true
       })
+    },
+    preview () {
+      this.isPreviewing = true
+    },
+    getGithubUrl () {
+      let markdown = markdownGenerator.generateMarkdown(this.newIssue)
+      let returnUrl = format({
+        protocol: 'https',
+        host: 'github.com',
+        pathname: '/vuetifyjs/vuetify/issues/new',
+        query: {
+          title: this.newIssue.title,
+          body: markdown
+        }
+      })
+      let issueUrl = format({
+        protocol: 'https',
+        host: 'github.com',
+        pathname: '/login',
+        query: {
+          return_to: returnUrl
+        }
+      })
+      return issueUrl
     }
   },
   computed: {
