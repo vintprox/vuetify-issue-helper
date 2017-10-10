@@ -28,9 +28,8 @@
 
 <script>
 export default {
-
   name: 'possible-issues',
-  props: ['issues'],
+
   data () {
     return {
       headers: [
@@ -48,9 +47,8 @@ export default {
         }
       ]
     }
-  }
+  },
+
+  props: ['issues']
 }
 </script>
-
-<style lang="stylus" scoped>
-</style>
