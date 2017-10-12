@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12>
+  <v-flex>
     <v-card class="grey lighten-4">
       <v-card-title><span class="title">Information</span></v-card-title>
       <v-card-text>
@@ -32,15 +32,6 @@
 
 <script>
 export default {
-  name: 'information-box',
-  data () {
-    return {
-
-    }
-  }
+  name: 'information-box'
 }
 </script>
-
-<style scoped>
-
-</style>

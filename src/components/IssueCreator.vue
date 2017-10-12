@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-layout row wrap>
+    <v-layout column>
       <InformationBox></InformationBox>
       <NewIssueForm></NewIssueForm>
     </v-layout>
@@ -13,13 +13,10 @@ import NewIssueForm from './NewIssueForm'
 
 export default {
   name: 'issue-creator',
+
   components: {
     InformationBox,
     NewIssueForm
   }
 }
 </script>
-
-<style scoped>
-
-</style>
