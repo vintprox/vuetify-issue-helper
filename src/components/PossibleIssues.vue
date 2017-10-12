@@ -15,7 +15,7 @@
           <tr>
             <td class="text-xs-left">{{ props.item.title }}</td>
             <td class="text-xs-center">
-              <v-btn tag="a" icon :href="props.item.url" target="_blank" flat>
+              <v-btn tag="a" icon rel="noopener" :href="props.item.url" target="_blank" flat>
                 <v-icon>open_in_new</v-icon>
               </v-btn>
             </td>

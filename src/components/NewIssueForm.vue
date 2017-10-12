@@ -126,10 +126,11 @@
         </v-layout>
       </v-slide-y-transition>
       <v-layout row justify-center>
+        <v-btn dark @click.stop="clearAll">Clear All</v-btn>
         <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
         <v-dialog width="640" v-model="isPreviewing">
           <v-card>
-            <v-card-title class="headline">New Issue</v-card-title>
+            <v-card-title class="headline">New Issue: {{newIssue.title}}</v-card-title>
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout row wrap v-if="newIssue.type === 'bug'">
@@ -154,7 +155,7 @@
                   </v-flex>
                   <v-flex xs12>
                     <div class="title">Reproduction Link</div>
-                    <div class="body text-xs-left"><a href="newIssue.link" target="_blank">{{newIssue.link}}</a></div>
+                    <div class="body text-xs-left"><a href="newIssue.link" rel="noopener" target="_blank">{{newIssue.link}}</a></div>
                   </v-flex>
                   <v-flex xs12>
                     <div class="title">Comments</div>
@@ -179,7 +180,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" flat tag="a" :href="getGithubUrl()">Create</v-btn>
+              <v-btn color="blue darken-1" flat tag="a" target="_blank" rel="noopener" :href="getGithubUrl()">Create</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -236,7 +237,7 @@ export default {
         'Internet Explorer',
         'Microsoft Edge'
       ],
-      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue">CodeSandbox</a> or a github repo',
+      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
       newIssue: {
         type: '',
         title: '',
@@ -294,7 +295,30 @@ export default {
         console.error(err)
       })
     },
+    clearAll () {
+      this.newIssue = {
+        type: '',
+        title: '',
+        vueVersion: '',
+        vuetifyVersion: '',
+        os: [],
+        browsers: [],
+        link: '',
+        steps: '',
+        expected: '',
+        actual: '',
+        other: '',
+        whatsNew: '',
+        whatsImproved: '',
+        whatsAvoided: ''
+      }
+    },
     preview () {
+      if (this.newIssue.type === 'bug') {
+        this.newIssue.title = '[BUG] ' + this.newIssue.title
+      } else {
+        this.newIssue.title = '[FEATURE] ' + this.newIssue.title
+      }
       this.isPreviewing = true
     },
     getGithubUrl () {
