@@ -36,4 +36,7 @@
 
   .toolbar__content > .toolbar__title
     font-weight: 100
+
+  h6
+    margin-bottom: 8px
 </style>

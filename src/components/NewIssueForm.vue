@@ -1,5 +1,5 @@
 <template>
-  <v-form v-model="isValid">
+  <v-form v-model="isValid" ref="form">
     <v-container grid-list-md class="mt-3">
       <v-layout row wrap>
         <v-flex xs12>
@@ -25,7 +25,7 @@
       </v-layout>
       <v-slide-y-transition>
         <v-layout row wrap v-if="newIssue.type == 'bug'">
-          <v-flex xs6>
+          <v-flex xs12 sm6>
             <v-select
               v-model="newIssue.vuetifyVersion"
               label="Vuetify Version"
@@ -34,14 +34,14 @@
               :hint="vuetifyVersionHint"
               :persistent-hint="true"></v-select>
           </v-flex>
-          <v-flex xs6>
+          <v-flex xs12 sm6>
             <v-select
               v-model="newIssue.vueVersion"
               label="Vue Version"
               :rules="[rules.required]"
               :items="vueVersions"></v-select>
           </v-flex>
-          <v-flex xs6>
+          <v-flex xs12 sm6>
             <v-select
               multiple
               v-model="newIssue.os"
@@ -49,7 +49,7 @@
               :rules="[rules.requiredMultiple]"
               :items="operatingSystems"></v-select>
           </v-flex>
-          <v-flex xs6>
+          <v-flex xs12 sm6>
             <v-select
               multiple
               v-model="newIssue.browsers"
@@ -130,49 +130,49 @@
         <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
         <v-dialog width="640" v-model="isPreviewing">
           <v-card>
-            <v-card-title class="headline">New Issue: {{newIssue.title}}</v-card-title>
+            <v-card-title class="headline primary white--text">{{newIssue.title}}</v-card-title>
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout row wrap v-if="newIssue.type === 'bug'">
-                  <v-flex xs12>
-                    <div class="title">Versions and Environment</div>
-                    <div class="body text-xs-left">Vuetify Version: {{newIssue.vuetifyVersion}}</div>
-                    <div class="body text-xs-left">Vue Version: {{newIssue.vueVersion}}</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Versions and environment</h6>
+                    <div class="body text-xs-left">Vuetify: {{newIssue.vuetifyVersion}}</div>
+                    <div class="body text-xs-left">Vue: {{newIssue.vueVersion}}</div>
                     <div class="body text-xs-left">Browsers: {{newIssue.browsers.join(', ')}}</div>
                     <div class="body text-xs-left">Operating Systems: {{newIssue.os.join(', ')}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Steps to Reproduce</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Steps to reproduce</h6>
                     <div class="body text-xs-left">{{newIssue.steps}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Expected Behavior</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Expected Behavior</h6>
                     <div class="body text-xs-left">{{newIssue.expected}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Actual Behavior</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Actual Behavior</h6>
                     <div class="body text-xs-left">{{newIssue.actual}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Reproduction Link</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Reproduction Link</h6>
                     <div class="body text-xs-left"><a href="newIssue.link" rel="noopener" target="_blank">{{newIssue.link}}</a></div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Comments</div>
+                  <v-flex xs12 class="mb-2" v-if="newIssue.other">
+                    <h6>Comments</h6>
                     <div class="body text-xs-left">{{newIssue.other}}</div>
                   </v-flex>
                 </v-layout>
                 <v-layout row wrap v-if="newIssue.type === 'feature'">
-                  <v-flex xs12>
-                    <div class="title">New Functionality</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>New Functionality</h6>
                     <div class="body text-xs-left">{{newIssue.whatsNew}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Improvements</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Improvements</h6>
                     <div class="body text-xs-left">{{newIssue.whatsImproved}}</div>
                   </v-flex>
-                  <v-flex xs12>
-                    <div class="title">Bugs or Edge Cases it Helps Avoid</div>
+                  <v-flex xs12 class="mb-2">
+                    <h6>Bugs or edge cases it helps avoid</h6>
                     <div class="body text-xs-left">{{newIssue.whatsAvoided}}</div>
                   </v-flex>
                 </v-layout>
@@ -235,7 +235,8 @@ export default {
         'Firefox',
         'Opera',
         'Internet Explorer',
-        'Microsoft Edge'
+        'Microsoft Edge',
+        'Other'
       ],
       linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
       newIssue: {
@@ -312,12 +313,13 @@ export default {
         whatsImproved: '',
         whatsAvoided: ''
       }
+      this.$refs.form.reset()
     },
     preview () {
       if (this.newIssue.type === 'bug') {
-        this.newIssue.title = '[BUG] ' + this.newIssue.title
+        this.newIssue.title = '[Bug] ' + this.newIssue.title
       } else {
-        this.newIssue.title = '[FEATURE] ' + this.newIssue.title
+        this.newIssue.title = '[Feature Request] ' + this.newIssue.title
       }
       this.isPreviewing = true
     },
