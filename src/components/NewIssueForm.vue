@@ -284,7 +284,7 @@ export default {
     searchIssues () {
       if (!this.newIssue.title) return
 
-      axios.get('/api', {
+      axios.get('https://issue-helper-api-ndqljbkywa.now.sh', {
         params: {
           q: this.newIssue.title
         }
