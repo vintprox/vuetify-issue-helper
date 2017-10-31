@@ -130,7 +130,7 @@
         <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
         <v-dialog width="640" v-model="isPreviewing">
           <v-card>
-            <v-card-title class="headline primary white--text">{{newIssue.title}}</v-card-title>
+            <v-card-title class="headline primary white--text">{{newIssue.issueTitle}}</v-card-title>
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout row wrap v-if="newIssue.type === 'bug'">
@@ -263,6 +263,9 @@ export default {
   },
 
   computed: {
+    issueTitle () {
+      return `[${this.types[this.newIssue.type].text}] ${this.newIssue.title}`
+    },
     vuetifyVersionHint () {
       return this.newIssue.vuetifyVersion && this.newIssue.vuetifyVersion !== this.vuetifyLatest
         ? `Please check if bug exists on ${this.vuetifyLatest} before submitting`
@@ -317,15 +320,10 @@ export default {
       this.$refs.form.reset()
     },
     preview () {
-      if (this.newIssue.type === 'bug') {
-        this.newIssue.title = '[Bug] ' + this.newIssue.title
-      } else {
-        this.newIssue.title = '[Feature Request] ' + this.newIssue.title
-      }
       this.isPreviewing = true
     },
     getGithubUrl () {
-      const body = markdownGenerator.generateMarkdown(this.newIssue)
+      const body = markdownGenerator.generateMarkdown(Object.assign({}, this.newIssue, { title: this.issueTitle }))
       const returnUrl = format({
         protocol: 'https',
         host: 'github.com',
