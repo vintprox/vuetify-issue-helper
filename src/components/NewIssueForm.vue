@@ -91,7 +91,7 @@
           <v-flex xs12>
             <v-text-field
               v-model="newIssue.other"
-              label="Comments"
+              label="Comments (optional)"
               :rows="3"
               textarea></v-text-field>
           </v-flex>
