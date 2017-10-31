@@ -15,7 +15,7 @@
           <v-text-field
             v-model="newIssue.title"
             label="Issue Title"
-            :rules="[rules.required]"
+            :rules="[rules.requiredText]"
             @change="searchIssues"
           ></v-text-field>
           <v-slide-y-transition>
@@ -61,7 +61,7 @@
             <v-text-field
               v-model="newIssue.link"
               label="Reproduction Link"
-              :rules="[rules.required, rules.validRepro]"
+              :rules="[rules.requiredText, rules.validRepro]"
               :hint="linkHint"
               :persistent-hint="true"></v-text-field>
           </v-flex>
@@ -69,14 +69,14 @@
             <v-text-field
               v-model="newIssue.steps"
               label="Steps to Reproduce"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               textarea></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
               v-model="newIssue.expected"
               label="Expected Functionality"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               :rows="3"
               textarea></v-text-field>
           </v-flex>
@@ -84,7 +84,7 @@
             <v-text-field
               v-model="newIssue.actual"
               label="Actual Functionality"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               :rows="3"
               textarea></v-text-field>
           </v-flex>
@@ -104,7 +104,7 @@
               v-model="newIssue.whatsNew"
               label="What will it allow you to do that you can't do today?"
               :rows="3"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               textarea></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -112,7 +112,7 @@
               v-model="newIssue.whatsImproved"
               label="How will it make current work-arounds straightforward?"
               :rows="3"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               textarea></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -120,7 +120,7 @@
               v-model="newIssue.whatsAvoided"
               label="What potential bugs and edge cases does it help to avoid?"
               :rows="3"
-              :rules="[rules.required]"
+              :rules="[rules.requiredText]"
               textarea></v-text-field>
           </v-flex>
         </v-layout>
@@ -210,6 +210,7 @@ export default {
       isPreviewing: false,
       rules: {
         required: (v) => !!v || 'This field is required',
+        requiredText: (v) => v.trim().length || 'This field is required',
         requiredMultiple: (v) => !!v.length || 'This field is required',
         validRepro: (v) => /.*?(github|codepen|jsfiddle|codesandbox).*?/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
       },
