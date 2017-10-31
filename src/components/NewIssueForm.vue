@@ -229,7 +229,9 @@ export default {
       operatingSystems: [
         'Mac OSX',
         'Windows',
-        'Linux'
+        'Linux',
+        'Android',
+        'iOS'
       ],
       browsers: [
         'Chrome',
