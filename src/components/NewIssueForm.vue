@@ -130,7 +130,7 @@
         <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
         <v-dialog width="640" v-model="isPreviewing">
           <v-card>
-            <v-card-title class="headline primary white--text">{{newIssue.issueTitle}}</v-card-title>
+            <v-card-title class="headline primary white--text">{{issueTitle}}</v-card-title>
             <v-card-text>
               <v-container grid-list-md>
                 <v-layout row wrap v-if="newIssue.type === 'bug'">
@@ -180,6 +180,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
+              <v-btn color="error" flat @click="isPreviewing = false"><v-icon>close</v-icon>Cancel</v-btn>
               <v-btn color="blue darken-1" flat tag="a" target="_blank" rel="noopener" :href="getGithubUrl()">Create</v-btn>
             </v-card-actions>
           </v-card>
@@ -210,7 +211,7 @@ export default {
       isPreviewing: false,
       rules: {
         required: (v) => !!v || 'This field is required',
-        requiredText: (v) => v.trim().length || 'This field is required',
+        requiredText: (v) => (v.trim().length > 0) || 'This field is required',
         requiredMultiple: (v) => !!v.length || 'This field is required',
         validRepro: (v) => /.*?(github|codepen|jsfiddle|codesandbox).*?/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
       },
@@ -264,7 +265,12 @@ export default {
 
   computed: {
     issueTitle () {
-      return `[${this.types[this.newIssue.type].text}] ${this.newIssue.title}`
+      return this.newIssue.type ? `[${this.typesByValue[this.newIssue.type]}] ${this.newIssue.title}` : this.newIssue.title
+    },
+    typesByValue () {
+      const typesByValue = {}
+      this.types.forEach(({ text, value }) => typesByValue[value] = text)
+      return typesByValue
     },
     vuetifyVersionHint () {
       return this.newIssue.vuetifyVersion && this.newIssue.vuetifyVersion !== this.vuetifyLatest
