@@ -14,6 +14,9 @@ Vue: ${data.vueVersion}
 Browsers: ${data.browsers}
 OS: ${data.os}
 
+### Steps to reproduce
+${data.steps}
+
 ### Expected Behavior
 ${data.expected}
 
