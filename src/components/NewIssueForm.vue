@@ -41,17 +41,19 @@
               :rules="[rules.required]"
               :items="vueVersions"></v-select>
           </v-flex>
-          <v-flex xs12 sm6>
+          <v-flex xs12>
             <v-select
               multiple
+              autocomplete
               v-model="newIssue.os"
               label="Operating System"
               :rules="[rules.requiredMultiple]"
               :items="operatingSystems"></v-select>
           </v-flex>
-          <v-flex xs12 sm6>
+          <v-flex xs12>
             <v-select
               multiple
+              autocomplete
               v-model="newIssue.browsers"
               label="Affected Browsers"
               :rules="[rules.requiredMultiple]"
@@ -138,7 +140,7 @@
                     <h6>Versions and environment</h6>
                     <div class="body text-xs-left">Vuetify: {{newIssue.vuetifyVersion}}</div>
                     <div class="body text-xs-left">Vue: {{newIssue.vueVersion}}</div>
-                    <div class="body text-xs-left">Browsers: {{newIssue.browsers.join(', ')}}</div>
+                    <div class="body text-xs-left">Browsers: {{issueBrowsers.join(', ')}}</div>
                     <div class="body text-xs-left">Operating Systems: {{newIssue.os.join(', ')}}</div>
                   </v-flex>
                   <v-flex xs12 class="mb-2">
@@ -155,7 +157,7 @@
                   </v-flex>
                   <v-flex xs12 class="mb-2">
                     <h6>Reproduction Link</h6>
-                    <div class="body text-xs-left"><a href="newIssue.link" rel="noopener" target="_blank">{{newIssue.link}}</a></div>
+                    <div class="body text-xs-left"><a :href="newIssue.link" rel="noopener" target="_blank">{{newIssue.link}}</a></div>
                   </v-flex>
                   <v-flex xs12 class="mb-2" v-if="newIssue.other">
                     <h6>Comments</h6>
@@ -206,6 +208,7 @@ export default {
   },
 
   data () {
+    const currentBrowserItem = 'Current browser' + (navigator.userAgent ? ` - ${navigator.userAgent.substr(0, 40)}…` : '')
     return {
       isValid: false,
       isPreviewing: false,
@@ -213,7 +216,7 @@ export default {
         required: (v) => !!v || 'This field is required',
         requiredText: (v) => (v.trim().length > 0) || 'This field is required',
         requiredMultiple: (v) => !!v.length || 'This field is required',
-        validRepro: (v) => /.*?(github|codepen|jsfiddle|codesandbox).*?/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
+        validRepro: (v) => /https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
       },
       types: [
         {
@@ -227,19 +230,20 @@ export default {
       isError: false,
       possibleIssues: [],
       operatingSystems: [
-        'Mac OSX',
-        'Windows',
-        'Linux',
         'Android',
-        'iOS'
+        'iOS',
+        'Linux',
+        'Mac OSX',
+        'Windows'
       ],
       browsers: [
-        'Chrome',
-        'Safari',
-        'Firefox',
-        'Opera',
+        currentBrowserItem,
+        'Apple Safari',
+        'Google Chrome',
         'Internet Explorer',
         'Microsoft Edge',
+        'Mozilla Firefox',
+        'Opera',
         'Other'
       ],
       linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
@@ -249,7 +253,7 @@ export default {
         vueVersion: '',
         vuetifyVersion: '',
         os: [],
-        browsers: [],
+        browsers: [currentBrowserItem],
         link: '',
         steps: '',
         expected: '',
@@ -268,6 +272,9 @@ export default {
   computed: {
     issueTitle () {
       return this.newIssue.type ? `[${this.typesByValue[this.newIssue.type]}] ${this.newIssue.title}` : this.newIssue.title
+    },
+    issueBrowsers () {
+      return this.newIssue.browsers.map(browser => browser.replace(/^Current browser.*$/, navigator.userAgent))
     },
     typesByValue () {
       const typesByValue = {}
@@ -331,7 +338,10 @@ export default {
       this.isPreviewing = true
     },
     getGithubUrl () {
-      const body = markdownGenerator.generateMarkdown(Object.assign({}, this.newIssue, { title: this.issueTitle }))
+      const body = markdownGenerator.generateMarkdown(Object.assign({}, this.newIssue, {
+        title: this.issueTitle,
+        browsers: this.issueBrowsers
+      }))
       const returnUrl = format({
         protocol: 'https',
         host: 'github.com',
