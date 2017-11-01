@@ -2,10 +2,10 @@ export const routes = [
   {
     path: '/',
     name: 'IssueCreator',
-    component: () => import('@/components/IssueCreator.vue')
+    component: () => Promise.resolve(require('@/components/IssueCreator.vue'))
   },
   {
     path: '*',
-    component: () => import('@/components/404.vue')
+    component: () => Promise.resolve(require('@/components/404.vue'))
   }
 ]

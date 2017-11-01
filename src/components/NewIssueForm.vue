@@ -303,7 +303,7 @@ export default {
     searchIssues () {
       if (!this.newIssue.title) return
 
-      axios.get('https://issue-helper-api-ndqljbkywa.now.sh', {
+      axios.get(process.env.issueApiUrl, {
         params: {
           q: this.newIssue.title
         }
