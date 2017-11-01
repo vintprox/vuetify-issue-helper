@@ -338,10 +338,12 @@ export default {
       this.$refs.form.validate() && (this.isPreviewing = true)
     },
     getGithubUrl () {
-      const body = markdownGenerator.generateMarkdown(Object.assign({}, this.newIssue, {
+      const data = Object.assign({}, this.newIssue, {
         title: this.issueTitle,
         browsers: this.issueBrowsers
-      }))
+      })
+      Object.keys(data).forEach(prop => data[prop] = data[prop] == null ? '' : data[prop])
+      const body = markdownGenerator.generateMarkdown(data)
       const returnUrl = format({
         protocol: 'https',
         host: 'github.com',
