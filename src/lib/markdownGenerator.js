@@ -11,8 +11,8 @@ export default {
 ### Versions and Environment
 Vuetify: ${data.vuetifyVersion}
 Vue: ${data.vueVersion}
-Browsers: ${data.browsers}
-OS: ${data.os}
+Browsers: ${data.browsers.join(', ')}
+OS: ${data.os.join(', ')}
 
 ### Steps to reproduce
 ${data.steps.trim()}
