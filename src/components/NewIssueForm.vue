@@ -214,7 +214,7 @@ export default {
       isPreviewing: false,
       rules: {
         required: (v) => !!v || 'This field is required',
-        requiredText: (v) => (v.trim().length > 0) || 'This field is required',
+        requiredText: (v) => ((v || '').trim().length > 0) || 'This field is required',
         requiredMultiple: (v) => !!v.length || 'This field is required',
         validRepro: (v) => /https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
       },
