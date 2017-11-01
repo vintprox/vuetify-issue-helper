@@ -347,7 +347,7 @@ export default {
         host: 'github.com',
         pathname: '/vuetifyjs/vuetify/issues/new',
         query: {
-          title: this.newIssue.title,
+          title: this.issueTitle,
           body
         }
       })
