@@ -1,5 +1,5 @@
 <template>
-  <v-form v-model="isValid" ref="form">
+  <v-form v-model="isValid" ref="form" lazy-validation>
     <v-container grid-list-md class="mt-3">
       <v-layout row wrap>
         <v-flex xs12>
@@ -128,8 +128,8 @@
         </v-layout>
       </v-slide-y-transition>
       <v-layout row justify-center>
-        <v-btn dark @click.stop="clearAll">Clear All</v-btn>
-        <v-btn dark color="primary" :disabled="!isValid" v-if="newIssue.type" @click.stop="preview">Preview</v-btn>
+        <v-btn dark @click="clearAll">Clear All</v-btn>
+        <v-btn color="primary" :disabled="!isValid" v-if="newIssue.type" @click="preview">Preview</v-btn>
         <v-dialog width="640" v-model="isPreviewing">
           <v-card>
             <v-card-title class="headline primary white--text">{{issueTitle}}</v-card-title>
@@ -335,7 +335,7 @@ export default {
       this.$refs.form.reset()
     },
     preview () {
-      this.isPreviewing = true
+      this.$refs.form.validate() && (this.isPreviewing = true)
     },
     getGithubUrl () {
       const body = markdownGenerator.generateMarkdown(Object.assign({}, this.newIssue, {
