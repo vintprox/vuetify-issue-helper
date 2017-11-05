@@ -205,8 +205,8 @@ export default {
       'Opera',
       'Other'
     ],
-    linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
-    markdownHint: 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank">markdown</a>',
+    linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank" tabindex="-1">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank" tabindex="-1">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener" tabindex="-1">CodeSandbox</a> or a github repo',
+    markdownHint: 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank" tabindex="-1">markdown</a>',
     newIssue: {
       type: '',
       title: '',
