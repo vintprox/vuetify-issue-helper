@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <v-card class="grey lighten-4">
     <v-card-title><span class="title">Information</span></v-card-title>
     <v-card-text>
