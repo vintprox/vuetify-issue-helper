@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-layout column>
-      <InformationBox></InformationBox>
+      <InformationBox class="mt-3"></InformationBox>
       <NewIssueForm></NewIssueForm>
     </v-layout>
   </v-container>
@@ -20,3 +20,12 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.container
+  @media only screen and (min-width: 1264px)
+    max-width: 600px
+
+  @media only screen and (min-width: 960px)
+    max-width: 800px
+</style>

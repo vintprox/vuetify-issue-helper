@@ -6,10 +6,9 @@
           <v-select
             v-model="newIssue.type"
             label="I am submitting a"
-            max-height="auto"
             :items="types"
-          >
-          </v-select>
+            return-object
+          ></v-select>
         </v-flex>
         <v-flex xs12>
           <v-text-field
@@ -18,13 +17,11 @@
             :rules="[rules.requiredText]"
             @change="searchIssues"
           ></v-text-field>
-          <v-slide-y-transition>
-            <PossibleIssues v-if="!isError && possibleIssues.length" :issues="possibleIssues"></PossibleIssues>
-          </v-slide-y-transition>
+          <similar-issues :issues="similarIssues"></similar-issues>
         </v-flex>
       </v-layout>
-      <v-slide-y-transition>
-        <v-layout row wrap v-if="newIssue.type == 'bug'">
+      <v-slide-y-transition mode="out-in">
+        <v-layout row wrap v-if="newIssue.type.value === 'bug'">
           <v-flex xs12 sm6>
             <v-select
               v-model="newIssue.vuetifyVersion"
@@ -32,14 +29,16 @@
               :rules="[rules.required]"
               :items="vuetifyVersions"
               :hint="vuetifyVersionHint"
-              :persistent-hint="true"></v-select>
+              persistent-hint
+            ></v-select>
           </v-flex>
           <v-flex xs12 sm6>
             <v-select
               v-model="newIssue.vueVersion"
               label="Vue Version"
               :rules="[rules.required]"
-              :items="vueVersions"></v-select>
+              :items="vueVersions"
+            ></v-select>
           </v-flex>
           <v-flex xs12>
             <v-select
@@ -48,7 +47,8 @@
               v-model="newIssue.os"
               label="Operating System"
               :rules="[rules.requiredMultiple]"
-              :items="operatingSystems"></v-select>
+              :items="operatingSystems"
+            ></v-select>
           </v-flex>
           <v-flex xs12>
             <v-select
@@ -57,7 +57,8 @@
               v-model="newIssue.browsers"
               label="Affected Browsers"
               :rules="[rules.requiredMultiple]"
-              :items="browsers"></v-select>
+              :items="browsers"
+            ></v-select>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -65,14 +66,17 @@
               label="Reproduction Link"
               :rules="[rules.requiredText, rules.validRepro]"
               :hint="linkHint"
-              :persistent-hint="true"></v-text-field>
+              persistent-hint
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
               v-model="newIssue.steps"
               label="Steps to Reproduce"
               :rules="[rules.requiredText]"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -80,7 +84,9 @@
               label="Expected Functionality"
               :rules="[rules.requiredText]"
               :rows="3"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -88,26 +94,30 @@
               label="Actual Functionality"
               :rules="[rules.requiredText]"
               :rows="3"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
               v-model="newIssue.other"
               label="Comments (optional)"
               :rows="3"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
         </v-layout>
-      </v-slide-y-transition>
-      <v-slide-y-transition mode="out-in">
-        <v-layout row wrap v-if="newIssue.type == 'feature'">
+        <v-layout row wrap v-else-if="newIssue.type.value === 'feature'">
           <v-flex xs12>
             <v-text-field
               v-model="newIssue.whatsNew"
               label="What will it allow you to do that you can't do today?"
               :rows="3"
               :rules="[rules.requiredText]"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -115,7 +125,9 @@
               label="How will it make current work-arounds straightforward?"
               :rows="3"
               :rules="[rules.requiredText]"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -123,163 +135,104 @@
               label="What potential bugs and edge cases does it help to avoid?"
               :rows="3"
               :rules="[rules.requiredText]"
-              textarea></v-text-field>
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
           </v-flex>
         </v-layout>
       </v-slide-y-transition>
       <v-layout row justify-center>
         <v-btn dark @click="clearAll">Clear All</v-btn>
         <v-btn color="primary" :disabled="!isValid" v-if="newIssue.type" @click="preview">Preview</v-btn>
-        <v-dialog width="640" v-model="isPreviewing">
-          <v-card>
-            <v-card-title class="headline primary white--text">{{issueTitle}}</v-card-title>
-            <v-card-text>
-              <v-container grid-list-md>
-                <v-layout row wrap v-if="newIssue.type === 'bug'">
-                  <v-flex xs12 class="mb-2">
-                    <h6>Versions and environment</h6>
-                    <div class="body text-xs-left">Vuetify: {{newIssue.vuetifyVersion}}</div>
-                    <div class="body text-xs-left">Vue: {{newIssue.vueVersion}}</div>
-                    <div class="body text-xs-left">Browsers: {{issueBrowsers.join(', ')}}</div>
-                    <div class="body text-xs-left">Operating Systems: {{newIssue.os.join(', ')}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Steps to reproduce</h6>
-                    <div class="body text-xs-left">{{newIssue.steps}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Expected Behavior</h6>
-                    <div class="body text-xs-left">{{newIssue.expected}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Actual Behavior</h6>
-                    <div class="body text-xs-left">{{newIssue.actual}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Reproduction Link</h6>
-                    <div class="body text-xs-left"><a :href="newIssue.link" rel="noopener" target="_blank">{{newIssue.link}}</a></div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2" v-if="newIssue.other">
-                    <h6>Comments</h6>
-                    <div class="body text-xs-left">{{newIssue.other}}</div>
-                  </v-flex>
-                </v-layout>
-                <v-layout row wrap v-if="newIssue.type === 'feature'">
-                  <v-flex xs12 class="mb-2">
-                    <h6>New Functionality</h6>
-                    <div class="body text-xs-left">{{newIssue.whatsNew}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Improvements</h6>
-                    <div class="body text-xs-left">{{newIssue.whatsImproved}}</div>
-                  </v-flex>
-                  <v-flex xs12 class="mb-2">
-                    <h6>Bugs or edge cases it helps avoid</h6>
-                    <div class="body text-xs-left">{{newIssue.whatsAvoided}}</div>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="error" flat @click="isPreviewing = false"><v-icon>close</v-icon>Cancel</v-btn>
-              <v-btn color="blue darken-1" flat tag="a" target="_blank" rel="noopener" :href="getGithubUrl()">Create</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
       </v-layout>
     </v-container>
+    <preview-dialog v-model="isPreviewing" :issue="newIssue"></preview-dialog>
   </v-form>
 </template>
 
 <script>
-import vuetifyRepo from '@/lib/axios'
-import markdownGenerator from '@/lib/markdownGenerator'
 import axios from 'axios'
-import { format } from 'url'
+import UAParser from 'ua-parser-js'
 
-import PossibleIssues from './PossibleIssues'
+import SimilarIssues from './SimilarIssues'
+import PreviewDialog from './PreviewDialog'
+
+const currentBrowser = UAParser().browser
+const currentBrowserString = `${currentBrowser.name} ${currentBrowser.version}`
+const currentBrowserItem = `Current browser - ${currentBrowserString}`
 
 export default {
   name: 'new-issue-form',
 
   components: {
-    PossibleIssues
+    SimilarIssues,
+    PreviewDialog
   },
 
-  data () {
-    const currentBrowserItem = 'Current browser' + (navigator.userAgent ? ` - ${navigator.userAgent.substr(0, 40)}…` : '')
-    return {
-      isValid: false,
-      isPreviewing: false,
-      rules: {
-        required: (v) => !!v || 'This field is required',
-        requiredText: (v) => ((v || '').trim().length > 0) || 'This field is required',
-        requiredMultiple: (v) => !!v.length || 'This field is required',
-        validRepro: (v) => /https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v) || 'Please only use Github, Codepen, CodeSandbox or JSFiddle'
-      },
-      types: [
-        {
-          text: 'Bug Report',
-          value: 'bug'
-        }, {
-          text: 'Feature Request',
-          value: 'feature'
-        }
-      ],
-      isError: false,
-      possibleIssues: [],
-      operatingSystems: [
-        'Android',
-        'iOS',
-        'Linux',
-        'Mac OSX',
-        'Windows'
-      ],
-      browsers: [
-        currentBrowserItem,
-        'Apple Safari',
-        'Google Chrome',
-        'Internet Explorer',
-        'Microsoft Edge',
-        'Mozilla Firefox',
-        'Opera',
-        'Other'
-      ],
-      linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
-      newIssue: {
-        type: '',
-        title: '',
-        vueVersion: '',
-        vuetifyVersion: '',
-        os: [],
-        browsers: [currentBrowserItem],
-        link: '',
-        steps: '',
-        expected: '',
-        actual: '',
-        other: '',
-        whatsNew: '',
-        whatsImproved: '',
-        whatsAvoided: ''
-      },
-      vueVersions: [],
-      vuetifyVersions: [],
-      vuetifyLatest: ''
-    }
-  },
+  data: vm => ({
+    isValid: false,
+    isPreviewing: false,
+    rules: {
+      required: v => !!v || 'This field is required',
+      requiredText: v => !!v.trim().length || 'This field is required',
+      requiredMultiple: v => !!v.length || 'This field is required',
+      validRepro: v => /https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v) || 'Please only use Codepen, JSFiddle, CodeSandbox or a github repo'
+    },
+    types: [
+      {
+        text: 'Bug Report',
+        value: 'bug'
+      }, {
+        text: 'Feature Request',
+        value: 'feature'
+      }
+    ],
+    similarIssues: [],
+    operatingSystems: [
+      'Windows',
+      'Android',
+      'iOS',
+      'Mac OSX',
+      'Linux'
+    ],
+    browsers: [
+      currentBrowserItem,
+      'Google Chrome',
+      'Mozilla Firefox',
+      'Safari',
+      'Microsoft Edge',
+      'Internet Explorer',
+      'Opera',
+      'Other'
+    ],
+    linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener">CodeSandbox</a> or a github repo',
+    markdownHint: 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank">markdown</a>',
+    newIssue: {
+      type: '',
+      title: '',
+      vueVersion: '',
+      vuetifyVersion: '',
+      os: [],
+      browsers: [currentBrowserItem],
+      link: '',
+      steps: '',
+      expected: '',
+      actual: '',
+      other: '',
+      whatsNew: '',
+      whatsImproved: '',
+      whatsAvoided: ''
+    },
+    vueVersions: [],
+    vuetifyVersions: [],
+    vuetifyLatest: ''
+  }),
 
   computed: {
-    issueTitle () {
-      return this.newIssue.type ? `[${this.typesByValue[this.newIssue.type]}] ${this.newIssue.title}` : this.newIssue.title
-    },
     issueBrowsers () {
-      return this.newIssue.browsers.map(browser => browser.replace(/^Current browser.*$/, navigator.userAgent))
-    },
-    typesByValue () {
-      const typesByValue = {}
-      this.types.forEach(({ text, value }) => typesByValue[value] = text)
-      return typesByValue
+      return this.newIssue.browsers.map(browser => (
+        browser.replace(/^Current browser.*$/, `${currentBrowser.name} ${currentBrowser.version}`)
+      ))
     },
     vuetifyVersionHint () {
       return this.newIssue.vuetifyVersion && this.newIssue.vuetifyVersion !== this.vuetifyLatest
@@ -289,7 +242,7 @@ export default {
   },
 
   mounted () {
-    vuetifyRepo.get('/releases').then(res => {
+    axios.get('https://api.github.com/repos/vuetifyjs/vuetify/releases').then(res => {
       this.vuetifyVersions = res.data.map(release => release.tag_name)
       this.vuetifyLatest = this.vuetifyVersions[0] || ''
     })
@@ -300,68 +253,25 @@ export default {
   },
 
   methods: {
-    searchIssues () {
+    async searchIssues () {
       if (!this.newIssue.title) return
 
-      axios.get(process.env.issueApiUrl, {
-        params: {
-          q: this.newIssue.title
-        }
-      }).then(res => {
+      try {
+        const res = await axios.get(process.env.issueApiUrl, {
+          params: { q: this.newIssue.title }
+        })
         this.possibleIssues = res.data.issues
-        this.isError = false
-      }).catch(err => {
-        this.isError = true
-        console.error(err)
-      })
+      } catch (err) {
+        this.possibleIssues = []
+        console.error(err.message)
+      }
     },
     clearAll () {
-      this.newIssue = {
-        type: '',
-        title: '',
-        vueVersion: '',
-        vuetifyVersion: '',
-        os: [],
-        browsers: [],
-        link: '',
-        steps: '',
-        expected: '',
-        actual: '',
-        other: '',
-        whatsNew: '',
-        whatsImproved: '',
-        whatsAvoided: ''
-      }
       this.$refs.form.reset()
+      this.newIssue = this.$options.data().newIssue
     },
     preview () {
-      this.$refs.form.validate() && (this.isPreviewing = true)
-    },
-    getGithubUrl () {
-      const data = Object.assign({}, this.newIssue, {
-        title: this.issueTitle,
-        browsers: this.issueBrowsers
-      })
-      Object.keys(data).forEach(prop => data[prop] = data[prop] == null ? '' : data[prop])
-      const body = markdownGenerator.generateMarkdown(data)
-      const returnUrl = format({
-        protocol: 'https',
-        host: 'github.com',
-        pathname: '/vuetifyjs/vuetify/issues/new',
-        query: {
-          title: this.issueTitle,
-          body
-        }
-      })
-      const issueUrl = format({
-        protocol: 'https',
-        host: 'github.com',
-        pathname: '/login',
-        query: {
-          return_to: returnUrl
-        }
-      })
-      return issueUrl
+      this.isPreviewing = this.$refs.form.validate()
     }
   }
 }
