@@ -53,11 +53,11 @@
 
     methods: {
       genIssueHTML () {
-        const text = generateMarkdown(this.issue)
+        const text = generateMarkdown(this.genTransformedIssue())
         this.issueHTML = marked(text, { breaks: true })
       },
       genGithubUrl () {
-        const body = generateMarkdown(this.issue)
+        const body = generateMarkdown(this.genTransformedIssue())
         const returnUrl = format({
           protocol: 'https',
           host: 'github.com',
@@ -75,6 +75,13 @@
             return_to: returnUrl
           }
         })
+      },
+      genTransformedIssue () {
+        const issue = Object.assign({}, this.issue)
+        issue.browsers = issue.browsers.map(browser => (
+          browser.replace('Current browser - ', '')
+        ))
+        return issue
       }
     }
   }

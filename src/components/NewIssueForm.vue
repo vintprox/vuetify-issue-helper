@@ -229,11 +229,6 @@ export default {
   }),
 
   computed: {
-    issueBrowsers () {
-      return this.newIssue.browsers.map(browser => (
-        browser.replace(/^Current browser.*$/, `${currentBrowser.name} ${currentBrowser.version}`)
-      ))
-    },
     vuetifyVersionHint () {
       return this.newIssue.vuetifyVersion && this.newIssue.vuetifyVersion !== this.vuetifyLatest
         ? `Please check if bug exists on ${this.vuetifyLatest} before submitting`
