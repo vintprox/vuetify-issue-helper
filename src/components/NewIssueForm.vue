@@ -30,7 +30,18 @@
               :items="vuetifyVersions"
               :hint="vuetifyVersionHint"
               persistent-hint
-            ></v-select>
+            >
+              <v-list-tile-content
+                slot="item"
+                slot-scope="{ item }"
+                :class="{
+                  'orange--text text--darken-3': item === vuetifyTags.beta,
+                  'green--text': item === vuetifyTags.latest
+                }"
+              >
+                <v-list-tile-title>{{ item }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-select>
           </v-flex>
           <v-flex xs12 sm6>
             <v-select
@@ -147,11 +158,14 @@
       </v-layout>
     </v-container>
     <preview-dialog v-model="isPreviewing" :issue="newIssue"></preview-dialog>
+    <v-snackbar v-model="showError" color="error">
+      <span>API request failed. Please report this on <a href="https://chat.vuetifyjs.com" target="_blank" class="white--text">Discord</a></span>
+    </v-snackbar>
   </v-form>
 </template>
 
 <script>
-import axios from 'axios'
+import api from '@/lib/api'
 import UAParser from 'ua-parser-js'
 
 import SimilarIssues from './SimilarIssues'
@@ -232,7 +246,9 @@ export default {
     },
     vueVersions: [],
     vuetifyVersions: [],
-    vuetifyLatest: ''
+    vuetifyLatest: '',
+    vuetifyTags: {},
+    showError: false
   }),
 
   computed: {
@@ -244,13 +260,20 @@ export default {
   },
 
   mounted () {
-    axios.get('https://api.github.com/repos/vuetifyjs/vuetify/releases').then(res => {
-      this.vuetifyVersions = res.data.map(release => release.tag_name)
+    api.get('versions/vuetify').then(res => {
+      this.vuetifyTags = res.data.tags
+      this.vuetifyVersions = res.data.versions
       this.vuetifyLatest = this.vuetifyVersions[0] || ''
+    }).catch(err => {
+      this.showError = true
+      console.error(err.message)
     })
 
-    axios.get('https://api.github.com/repos/vuejs/vue/releases').then(res => {
-      this.vueVersions = res.data.map(release => release.tag_name)
+    api.get('versions/vue').then(res => {
+      this.vueVersions = res.data.versions
+    }).catch(err => {
+      this.showError = true
+      console.error(err.message)
     })
   },
 
@@ -259,12 +282,13 @@ export default {
       if (!this.newIssue.title) return
 
       try {
-        const res = await axios.get(process.env.issueApiUrl, {
+        const res = await api.get('search-issues', {
           params: { q: this.newIssue.title }
         })
-        this.possibleIssues = res.data.issues
+        this.similarIssues = res.data.issues
       } catch (err) {
-        this.possibleIssues = []
+        this.similarIssues = []
+        this.showError = true
         console.error(err.message)
       }
     },

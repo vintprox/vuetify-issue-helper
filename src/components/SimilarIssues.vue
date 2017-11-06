@@ -10,7 +10,7 @@
             <v-divider v-if="index" :key="index"></v-divider>
             <v-list-tile :href="issue.url" target="_blank" :key="index">
               <v-list-tile-title>{{ issue.title }}</v-list-tile-title>
-              <v-list-tile-actions><v-icon>open_in_new</v-icon></v-list-tile-actions>
+              <v-list-tile-action><v-icon>open_in_new</v-icon></v-list-tile-action>
             </v-list-tile>
           </template>
         </v-list>
