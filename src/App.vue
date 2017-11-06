@@ -26,17 +26,7 @@
   }
 </script>
 
-<style lang="stylus">
-  main > .content > .container
-    @media only screen and (min-width: 1264px)
-      max-width: 600px
-
-    @media only screen and (min-width: 960px)
-      max-width: 800px
-
-  .toolbar__content > .toolbar__title
+<style lang="stylus" scoped>
+  .toolbar__title
     font-weight: 100
-
-  h6
-    margin-bottom: 8px
 </style>

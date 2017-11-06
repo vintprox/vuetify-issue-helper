@@ -1,4 +1,4 @@
 module.exports = {
   NODE_ENV: '"production"',
-  issueApiUrl: '"https://issue-helper-api-ndqljbkywa.now.sh"'
+  apiUrl: '"https://issue-helper-api-deahprvynf.now.sh"'
 }
