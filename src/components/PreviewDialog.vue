@@ -81,6 +81,9 @@
         issue.browsers = issue.browsers.map(browser => (
           browser.replace('Current browser - ', '')
         ))
+        issue.os = issue.os.map(os => (
+          os.replace('Current OS - ', '')
+        ))
         return issue
       }
     }

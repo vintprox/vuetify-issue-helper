@@ -157,9 +157,15 @@ import UAParser from 'ua-parser-js'
 import SimilarIssues from './SimilarIssues'
 import PreviewDialog from './PreviewDialog'
 
-const currentBrowser = UAParser().browser
+const userAgent = UAParser()
+
+const currentBrowser = userAgent.browser
 const currentBrowserString = `${currentBrowser.name} ${currentBrowser.version}`
 const currentBrowserItem = `Current browser - ${currentBrowserString}`
+
+const currentOS = userAgent.os
+const currentOSString = `${currentOS.name} ${currentOS.version}`
+const currentOSItem = `Current OS - ${currentOSString}`
 
 export default {
   name: 'new-issue-form',
@@ -189,6 +195,7 @@ export default {
     ],
     similarIssues: [],
     operatingSystems: [
+      currentOSItem,
       'Windows',
       'Android',
       'iOS',
@@ -212,7 +219,7 @@ export default {
       title: '',
       vueVersion: '',
       vuetifyVersion: '',
-      os: [],
+      os: [currentOSItem],
       browsers: [currentBrowserItem],
       link: '',
       steps: '',
