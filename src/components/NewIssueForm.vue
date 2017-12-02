@@ -35,7 +35,7 @@
                 slot="item"
                 slot-scope="{ item }"
                 :class="{
-                  'orange--text text--darken-3': item === vuetifyTags.beta,
+                  'orange--text text--darken-3': item === vuetifyTags.next,
                   'green--text': item === vuetifyTags.latest
                 }"
               >
