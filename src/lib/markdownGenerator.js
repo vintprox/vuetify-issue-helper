@@ -47,6 +47,9 @@ ${data.whatsNew}
 ### Improvements
 ${data.whatsImproved}
 
+### Proposed Implementation
+${data.implementation}
+
 ### Bugs or Edge Cases it Helps Avoid
 ${data.whatsAvoided}
 

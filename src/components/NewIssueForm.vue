@@ -142,6 +142,16 @@
           </v-flex>
           <v-flex xs12>
             <v-text-field
+              v-model="newIssue.implementation"
+              label="Please provide an example of the proposed functionality in psuedo code."
+              :rows="6"
+              :rules="[rules.requiredText]"
+              textarea
+              :hint="markdownHint"
+            ></v-text-field>
+          </v-flex>
+          <v-flex xs12>
+            <v-text-field
               v-model="newIssue.whatsAvoided"
               label="What potential bugs and edge cases does it help to avoid?"
               :rows="3"
@@ -241,6 +251,7 @@ export default {
       actual: '',
       other: '',
       whatsNew: '',
+      implementation: '',
       whatsImproved: '',
       whatsAvoided: ''
     },

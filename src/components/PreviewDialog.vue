@@ -1,5 +1,5 @@
 <template>
-  <v-dialog width="640" v-model="lazyValue" scrollable>
+  <v-dialog max-width="640" v-model="lazyValue" scrollable>
     <v-card>
       <v-card-title class="headline primary white--text">{{ issueTitle }}</v-card-title>
       <v-card-text class="markdown-body" v-html="issueHTML"></v-card-text>
