@@ -11,6 +11,15 @@
           ></v-select>
         </v-flex>
         <v-flex xs12>
+          <v-select
+            v-model="newIssue.repository"
+            label="For"
+            :items="repositories"
+            item-text="name"
+            return-object
+          ></v-select>
+        </v-flex>
+        <v-flex xs12>
           <v-text-field
             v-model="newIssue.title"
             label="Issue Title"
@@ -207,6 +216,7 @@ export default {
         value: 'feature'
       }
     ],
+    repositories: [],
     similarIssues: [],
     operatingSystems: [
       currentOSItem,
@@ -230,6 +240,7 @@ export default {
     markdownHint: 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank" tabindex="-1">markdown</a>',
     newIssue: {
       type: '',
+      repository: '',
       title: '',
       vueVersion: '',
       vuetifyVersion: '',
@@ -271,6 +282,13 @@ export default {
 
     api.get('versions/vue').then(res => {
       this.vueVersions = res.data.versions
+    }).catch(err => {
+      this.showError = true
+      console.error(err.message)
+    })
+
+    api.get('repositories').then(res => {
+      this.repositories = res.data.repositories
     }).catch(err => {
       this.showError = true
       console.error(err.message)
