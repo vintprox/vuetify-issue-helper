@@ -131,32 +131,22 @@
         <v-layout row wrap v-else-if="newIssue.type.value === 'feature'">
           <v-flex xs12>
             <v-text-field
-              v-model="newIssue.whatsNew"
-              label="What will it allow you to do that you can't do today?"
+              v-model="newIssue.problem"
+              label="What problem does this feature solve?"
               :rows="3"
               :rules="[rules.requiredText]"
               textarea
-              :hint="markdownHint"
+              :hint="problemHint"
             ></v-text-field>
           </v-flex>
           <v-flex xs12>
             <v-text-field
-              v-model="newIssue.whatsImproved"
-              label="How will it make current work-arounds straightforward?"
+              v-model="newIssue.solution"
+              label="What is your proposed solution?"
               :rows="3"
               :rules="[rules.requiredText]"
               textarea
-              :hint="markdownHint"
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
-              v-model="newIssue.whatsAvoided"
-              label="What potential bugs and edge cases does it help to avoid?"
-              :rows="3"
-              :rules="[rules.requiredText]"
-              textarea
-              :hint="markdownHint"
+              :hint="solutionHint"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -189,6 +179,8 @@ const currentBrowserItem = `Current browser - ${currentBrowserString}`
 const currentOS = userAgent.os
 const currentOSString = `${currentOS.name} ${currentOS.version}`
 const currentOSItem = `Current OS - ${currentOSString}`
+
+const markdownHint = 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank" tabindex="-1">markdown</a>'
 
 export default {
   name: 'new-issue-form',
@@ -237,7 +229,9 @@ export default {
       'Other'
     ],
     linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank" tabindex="-1">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank" tabindex="-1">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener" tabindex="-1">CodeSandbox</a> or a github repo',
-    markdownHint: 'You can use <a href="https://guides.github.com/features/mastering-markdown/" rel="noopener" target="_blank" tabindex="-1">markdown</a>',
+    markdownHint: markdownHint,
+    problemHint: `Please describe your use case, what this feature would solve, and the potential end user benefits of the request. ${markdownHint}`,
+    solutionHint: `Please describe your potential solution or change needed to implement this feature. Code samples and API suggestions are welcome. ${markdownHint}`,
     newIssue: {
       type: '',
       repository: '',
@@ -251,9 +245,8 @@ export default {
       expected: '',
       actual: '',
       other: '',
-      whatsNew: '',
-      whatsImproved: '',
-      whatsAvoided: ''
+      problem: '',
+      solution: ''
     },
     vueVersions: [],
     vuetifyVersions: [],
