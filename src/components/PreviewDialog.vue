@@ -61,7 +61,7 @@
         const returnUrl = format({
           protocol: 'https',
           host: 'github.com',
-          pathname: '/vuetifyjs/vuetify/issues/new',
+          pathname: this.issue.repository.issues_url,
           query: {
             title: this.issueTitle,
             body
