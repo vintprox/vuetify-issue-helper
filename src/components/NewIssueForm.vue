@@ -26,7 +26,7 @@
             :rules="[rules.requiredText]"
             @change="searchIssues"
           ></v-text-field>
-          <similar-issues :issues="similarIssues"></similar-issues>
+          <similar-issues v-if="newIssue.repository && newIssue.repository.name === 'vuetify'" :issues="similarIssues"></similar-issues>
         </v-flex>
       </v-layout>
       <v-slide-y-transition mode="out-in">
