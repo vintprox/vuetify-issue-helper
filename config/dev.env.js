@@ -3,5 +3,5 @@ var prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  apiUrl: '"/api"'
+  apiUrl: process.env.NOAPI ? undefined : '"/api"'
 })

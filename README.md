@@ -1,30 +1,23 @@
 # vuetify-issue-helper
 
-> Vuetify Issue Helper
-
 ## Build Setup
 
 ``` bash
 # install dependencies
-npm install
+yarn
 
 # serve with hot reload at localhost:8080
-npm run dev
+# you'll need issue-helper-api running too
+yarn dev
+
+# if you don't have access to the issue-helper-api repo,
+# you can configure it to use the live version instead
+NOAPI=true yarn dev
 
 # build for production with minification
-npm run build
+yarn build
 
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run e2e tests
-npm run e2e
-
-# run all tests
-npm test
+# deploy to production
+yarn build
+now issue-helper
 ```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
