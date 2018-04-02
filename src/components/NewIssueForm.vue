@@ -96,6 +96,7 @@
               :rules="[rules.requiredText]"
               textarea
               :hint="markdownHint"
+              persistent-hint
             ></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -106,6 +107,7 @@
               :rows="3"
               textarea
               :hint="markdownHint"
+              persistent-hint
             ></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -116,6 +118,7 @@
               :rows="3"
               textarea
               :hint="markdownHint"
+              persistent-hint
             ></v-text-field>
           </v-flex>
           <v-flex xs12>
@@ -125,6 +128,7 @@
               :rows="3"
               textarea
               :hint="markdownHint"
+              persistent-hint
             ></v-text-field>
           </v-flex>
         </v-layout>
