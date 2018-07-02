@@ -15,6 +15,7 @@
             v-model="newIssue.repository"
             label="For"
             :items="repositories"
+            :loading="reposLoading"
             item-text="name"
             return-object
           ></v-select>
@@ -37,6 +38,7 @@
               label="Vuetify Version"
               :rules="[rules.required]"
               :items="vuetifyVersions"
+              :loading="vuetifyLoading"
               :hint="vuetifyVersionHint"
               persistent-hint
             >
@@ -58,6 +60,7 @@
               label="Vue Version"
               :rules="[rules.required]"
               :items="vueVersions"
+              :loading="vueLoading"
             ></v-select>
           </v-flex>
           <v-flex xs12>
@@ -88,6 +91,33 @@
               :hint="linkHint"
               persistent-hint
             ></v-text-field>
+          </v-flex>
+          <v-flex xs12>
+            <v-checkbox
+              label="This used to work"
+              :input-value="newIssue.previousVersion != null"
+              @change="newIssue.previousVersion = newIssue.previousVersion == null ? '' : null"
+              hide-details
+            />
+            <v-select
+              v-if="newIssue.previousVersion != null"
+              v-model="newIssue.previousVersion"
+              label="Last known working version"
+              :rules="[rules.required]"
+              :items="vuetifyVersions"
+              :loading="vuetifyLoading"
+            >
+              <v-list-tile-content
+                slot="item"
+                slot-scope="{ item }"
+                :class="{
+                  'orange--text text--darken-3': item === vuetifyTags.next,
+                  'green--text': item === vuetifyTags.latest
+                }"
+              >
+                <v-list-tile-title>{{ item }}</v-list-tile-title>
+              </v-list-tile-content>
+            </v-select>
           </v-flex>
           <v-flex xs12>
             <v-text-field
@@ -242,6 +272,7 @@ export default {
       title: '',
       vueVersion: '',
       vuetifyVersion: '',
+      previousVersion: null,
       os: [currentOSItem],
       browsers: [currentBrowserItem],
       link: '',
@@ -256,7 +287,10 @@ export default {
     vuetifyVersions: [],
     vuetifyLatest: '',
     vuetifyTags: {},
-    showError: false
+    showError: false,
+    vuetifyLoading: false,
+    vueLoading: false,
+    reposLoading: false
   }),
 
   computed: {
@@ -268,6 +302,10 @@ export default {
   },
 
   mounted () {
+    this.vuetifyLoading = true
+    this.vueLoading = true
+    this.reposLoading = true
+
     api.get('versions/vuetify').then(res => {
       this.vuetifyTags = res.data.tags
       this.vuetifyVersions = res.data.versions
@@ -275,21 +313,21 @@ export default {
     }).catch(err => {
       this.showError = true
       console.error(err.message)
-    })
+    }).then(() => this.vuetifyLoading = false)
 
     api.get('versions/vue').then(res => {
       this.vueVersions = res.data.versions
     }).catch(err => {
       this.showError = true
       console.error(err.message)
-    })
+    }).then(() => this.vueLoading = false)
 
     api.get('repositories').then(res => {
       this.repositories = res.data.repositories
     }).catch(err => {
       this.showError = true
       console.error(err.message)
-    })
+    }).then(() => this.reposLoading = false)
   },
 
   methods: {

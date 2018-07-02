@@ -18,7 +18,8 @@ function generateBugMarkdown (data) {
   const other = data.other ? `### Other comments\n${data.other}\n\n` : ``
   return `
 ### Versions and Environment
-**Vuetify:** ${data.vuetifyVersion}
+**Vuetify:** ${data.vuetifyVersion}${data.previousVersion == null ? '' : `
+**Last working version:** ${data.previousVersion}`}
 **Vue:** ${data.vueVersion}
 **Browsers:** ${data.browsers.join(', ')}
 **OS:** ${data.os.join(', ')}
