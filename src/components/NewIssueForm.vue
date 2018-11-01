@@ -231,7 +231,18 @@ export default {
       required: v => !!v || 'This field is required',
       requiredText: v => !!v.trim().length || 'This field is required',
       requiredMultiple: v => !!v.length || 'This field is required',
-      validRepro: v => /https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v) || 'Please only use Codepen, JSFiddle, CodeSandbox or a github repo'
+      validRepro (v) {
+        if (v.startsWith('https://codepen.io/johnjleider/pen/bgJOrX') || v.startsWith('https://codepen.io/pen')) {
+          return 'Please save your codepen first'
+        }
+        if (!/^https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v)) {
+          return 'Please only use Codepen, JSFiddle, CodeSandbox or a github repo'
+        }
+        if (/^https?:\/\/github.com\/vuetifyjs\/?/.test(v)) {
+          return 'That is not a valid reproduction link'
+        }
+        return true
+      }
     },
     types: [
       {
