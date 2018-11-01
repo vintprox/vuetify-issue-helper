@@ -253,7 +253,24 @@ export default {
         value: 'feature'
       }
     ],
-    repositories: [],
+    repositories: [
+      {
+        name: 'Vuetify',
+        value: 'vuetify'
+      },
+      {
+        name: 'Documentation',
+        value: 'vuetify'
+      },
+      {
+        name: 'Vue CLI Plugin',
+        value: 'vue-cli-plugin-vuetify'
+      },
+      {
+        name: 'Vuetify Loader',
+        value: 'vuetify-loader'
+      }
+    ],
     similarIssues: [],
     operatingSystems: [
       currentOSItem,
@@ -300,8 +317,7 @@ export default {
     vuetifyTags: {},
     showError: false,
     vuetifyLoading: false,
-    vueLoading: false,
-    reposLoading: false
+    vueLoading: false
   }),
 
   computed: {
@@ -332,13 +348,6 @@ export default {
       this.showError = true
       console.error(err.message)
     }).then(() => this.vueLoading = false)
-
-    api.get('repositories').then(res => {
-      this.repositories = res.data.repositories
-    }).catch(err => {
-      this.showError = true
-      console.error(err.message)
-    }).then(() => this.reposLoading = false)
   },
 
   methods: {
