@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.18.1",
-    "marked": "^0.3.6",
+    "marked": "^0.3.18",
     "semver": "^5.3.0",
     "ua-parser-js": "^0.7.17",
     "github-markdown-css": "^2.9.0",
