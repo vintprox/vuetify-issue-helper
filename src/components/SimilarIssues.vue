@@ -7,11 +7,11 @@
       <v-card-text>
         <v-list>
           <template v-for="(issue, index) in props.issues">
-            <v-divider v-if="index" :key="index"></v-divider>
-            <v-list-tile :href="issue.url" target="_blank" :key="index">
-              <v-list-tile-title>{{ issue.title }}</v-list-tile-title>
-              <v-list-tile-action><v-icon>open_in_new</v-icon></v-list-tile-action>
-            </v-list-tile>
+            <v-divider v-if="index" :key="`${index}-div`"></v-divider>
+            <v-list-item :href="issue.url" target="_blank" :key="index">
+              <v-list-item-title>{{ issue.title }}</v-list-item-title>
+              <v-list-item-action><v-icon>mdi-launch</v-icon></v-list-item-action>
+            </v-list-item>
           </template>
         </v-list>
       </v-card-text>
