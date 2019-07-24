@@ -5,10 +5,10 @@ export default {
 }
 
 export function generateMarkdown (data) {
-  if (data.type.value === 'bug') {
+  if (data.type === 'bug') {
     return generateBugMarkdown(data)
   }
-  if (data.type.value === 'feature') {
+  if (data.type === 'feature') {
     return generateFeatureMarkdown(data)
   }
   return ''
@@ -16,11 +16,13 @@ export function generateMarkdown (data) {
 
 function generateBugMarkdown (data) {
   const other = data.other ? `### Other comments\n${data.other}\n\n` : ``
+  const vuetifyVersion = data.vuetifyVersion ? `**Vuetify Version:** ${data.vuetifyVersion}` : ``
+  const vueVersion = data.vueVersion ? `**Vue Version:** ${data.vueVersion}` : ``
   return `
-### Versions and Environment
-**Vuetify:** ${data.vuetifyVersion}${data.previousVersion == null ? '' : `
+### Environment
+${vuetifyVersion}${data.previousVersion == null ? '' : `
 **Last working version:** ${data.previousVersion}`}
-**Vue:** ${data.vueVersion}
+${vueVersion}
 **Browsers:** ${data.browsers.join(', ')}
 **OS:** ${data.os.join(', ')}
 

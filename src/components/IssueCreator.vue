@@ -1,9 +1,13 @@
 <template>
   <v-container>
-    <v-layout column>
-      <InformationBox class="mt-3"></InformationBox>
-      <NewIssueForm></NewIssueForm>
-    </v-layout>
+    <v-row>
+      <v-col cols="12">
+        <InformationBox class="mt-3"></InformationBox>
+      </v-col>
+      <v-col cols="12">
+        <NewIssueForm></NewIssueForm>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -21,7 +25,7 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
+<style lang="sass" scoped>
 .container
   @media only screen and (min-width: 1264px)
     max-width: 600px

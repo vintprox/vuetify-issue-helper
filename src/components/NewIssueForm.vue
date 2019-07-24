@@ -1,69 +1,81 @@
 <template>
+<v-card>
   <v-form v-model="isValid" ref="form" lazy-validation>
-    <v-container grid-list-md class="mt-3">
-      <v-layout row wrap>
-        <v-flex xs12>
-          <v-select
+    <v-container class="mt-3">
+      <v-row>
+        <v-col cols="12" sm="12" md="6">
+          <v-label class="body-2">I am submitting a</v-label>
+          <br />
+          <v-btn-toggle
             v-model="newIssue.type"
-            label="I am submitting a"
-            :items="types"
-            return-object
-          ></v-select>
-        </v-flex>
-        <v-flex xs12>
+            mandatory
+            rounded
+            style="width:100%; min-width: 380px"
+          >
+            <v-btn style="width:50%" small value="bug">
+              Bug Report
+            </v-btn>
+            <v-btn style="width:50%" small value="feature">
+              Feature Request
+            </v-btn>
+          </v-btn-toggle>
+        </v-col>
+        <v-col cols="12" sm="12" md="6">
           <v-select
             v-model="newIssue.repository"
             label="For"
             :items="repositories"
-            :loading="reposLoading"
+            :rules="[rules.required]"
             item-text="name"
             return-object
           ></v-select>
-        </v-flex>
-        <v-flex xs12>
+        </v-col>
+        <v-col cols="12">
           <v-text-field
             v-model="newIssue.title"
             label="Issue Title"
             :rules="[rules.requiredText]"
             @change="searchIssues"
           ></v-text-field>
-          <similar-issues v-if="newIssue.repository && newIssue.repository.name === 'vuetify'" :issues="similarIssues"></similar-issues>
-        </v-flex>
-      </v-layout>
+          <similar-issues v-if="newIssue.repository && newIssue.repository.value === 'vuetify'" :issues="similarIssues"></similar-issues>
+        </v-col>
+      </v-row>
       <v-slide-y-transition mode="out-in">
-        <v-layout row wrap v-if="newIssue.type.value === 'bug'">
-          <v-flex xs12 sm6>
-            <v-select
-              v-model="newIssue.vuetifyVersion"
-              label="Vuetify Version"
-              :rules="[rules.required]"
-              :items="vuetifyVersions"
-              :loading="vuetifyLoading"
-              :hint="vuetifyVersionHint"
-              persistent-hint
-            >
-              <v-list-tile-content
-                slot="item"
-                slot-scope="{ item }"
-                :class="{
-                  'orange--text text--darken-3': item === vuetifyTags.next,
-                  'green--text': item === vuetifyTags.latest
-                }"
+        <v-row v-if="newIssue.type === 'bug'">
+          <template v-if="newIssue.repository.value === 'vuetify'">
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="newIssue.vuetifyVersion"
+                label="Vuetify Version"
+                :rules="[rules.required]"
+                :items="vuetifyVersions"
+                :loading="vuetifyLoading"
+                :hint="vuetifyVersionHint"
+                persistent-hint
               >
-                <v-list-tile-title>{{ item }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-select>
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-select
-              v-model="newIssue.vueVersion"
-              label="Vue Version"
-              :rules="[rules.required]"
-              :items="vueVersions"
-              :loading="vueLoading"
-            ></v-select>
-          </v-flex>
-          <v-flex xs12>
+                <v-list-item-content
+                  slot="item"
+                  slot-scope="{ item }"
+                  :class="{
+                    'orange--text text--darken-3': item === vuetifyTags.next,
+                    'green--text': item === vuetifyTags.latest
+                  }"
+                >
+                  <v-list-item-title>{{ item }}</v-list-item-title>
+                </v-list-item-content>
+              </v-select>
+            </v-col>
+            <v-col cols="12" sm="6">
+              <v-select
+                v-model="newIssue.vueVersion"
+                label="Vue Version"
+                :rules="[rules.required]"
+                :items="vueVersions"
+                :loading="vueLoading"
+              ></v-select>
+            </v-col>
+          </template>
+          <v-col cols="12">
             <v-select
               multiple
               autocomplete
@@ -72,8 +84,8 @@
               :rules="[rules.requiredMultiple]"
               :items="operatingSystems"
             ></v-select>
-          </v-flex>
-          <v-flex xs12>
+          </v-col>
+          <v-col cols="12">
             <v-select
               multiple
               autocomplete
@@ -81,18 +93,20 @@
               label="Affected Browsers"
               :rules="[rules.requiredMultiple]"
               :items="browsers"
-            ></v-select>
-          </v-flex>
-          <v-flex xs12>
+            />
+          </v-col>
+          <v-col cols="12">
             <v-text-field
+              ref="repro"
+              v-if="['vuetify', 'docs'].includes(newIssue.repository.value)"
               v-model="newIssue.link"
               label="Reproduction Link"
               :rules="[rules.requiredText, rules.validRepro]"
-              :hint="linkHint"
+              :hint="reproductionHint"
               persistent-hint
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
+            />
+          </v-col>
+          <v-col cols="12" v-if="newIssue.repository.value === 'vuetify'">
             <v-checkbox
               label="This used to work"
               :input-value="newIssue.previousVersion != null"
@@ -107,7 +121,7 @@
               :items="vuetifyVersions"
               :loading="vuetifyLoading"
             >
-              <v-list-tile-content
+              <v-list-item-content
                 slot="item"
                 slot-scope="{ item }"
                 :class="{
@@ -115,86 +129,88 @@
                   'green--text': item === vuetifyTags.latest
                 }"
               >
-                <v-list-tile-title>{{ item }}</v-list-tile-title>
-              </v-list-tile-content>
+                <v-list-item-title>{{ item }}</v-list-item-title>
+              </v-list-item-content>
             </v-select>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              outlined
               v-model="newIssue.steps"
               label="Steps to Reproduce"
               :rules="[rules.requiredText]"
-              textarea
               :hint="markdownHint"
               persistent-hint
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              outlined
               v-model="newIssue.expected"
               label="Expected Functionality"
               :rules="[rules.requiredText]"
               :rows="3"
-              textarea
               :hint="markdownHint"
               persistent-hint
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              outlined
               v-model="newIssue.actual"
               label="Actual Functionality"
               :rules="[rules.requiredText]"
               :rows="3"
-              textarea
               :hint="markdownHint"
               persistent-hint
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              outlined
               v-model="newIssue.other"
               label="Comments (optional)"
               :rows="3"
-              textarea
               :hint="markdownHint"
               persistent-hint
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap v-else-if="newIssue.type.value === 'feature'">
-          <v-flex xs12>
-            <v-text-field
+            />
+          </v-col>
+        </v-row>
+        <v-row v-else-if="newIssue.type === 'feature'">
+          <v-col cols="12">
+            <v-textarea
               v-model="newIssue.problem"
+              outlined
               label="What problem does this feature solve?"
               :rows="3"
               :rules="[rules.requiredText]"
-              textarea
               :hint="problemHint"
-            ></v-text-field>
-          </v-flex>
-          <v-flex xs12>
-            <v-text-field
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
               v-model="newIssue.solution"
+              outlined
               label="What is your proposed solution?"
               :rows="3"
               :rules="[rules.requiredText]"
-              textarea
               :hint="solutionHint"
-            ></v-text-field>
-          </v-flex>
-        </v-layout>
+            />
+          </v-col>
+        </v-row>
       </v-slide-y-transition>
-      <v-layout row justify-center>
+      <v-row class="px-3 pt-10">
         <v-btn dark @click="clearAll">Clear All</v-btn>
+        <div class="flex-grow-1"></div>
         <v-btn color="primary" :disabled="!isValid" v-if="newIssue.type" @click="preview">Preview</v-btn>
-      </v-layout>
+      </v-row>
     </v-container>
     <preview-dialog v-model="isPreviewing" :issue="newIssue"></preview-dialog>
     <v-snackbar v-model="showError" color="error">
       <span>API request failed. Please report this on <a href="https://chat.vuetifyjs.com" target="_blank" class="white--text">Discord</a></span>
     </v-snackbar>
   </v-form>
+</v-card>
 </template>
 
 <script>
@@ -229,13 +245,16 @@ export default {
     isPreviewing: false,
     rules: {
       required: v => !!v || 'This field is required',
-      requiredText: v => !!v.trim().length || 'This field is required',
+      requiredText: v => (v && !!v.trim().length) || 'This field is required',
       requiredMultiple: v => !!v.length || 'This field is required',
       validRepro (v) {
         if (v.startsWith('https://codepen.io/johnjleider/pen/bgJOrX') || v.startsWith('https://codepen.io/pen')) {
           return 'Please save your codepen first'
         }
-        if (!/^https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v)) {
+        if (vm.newIssue.repository.value === 'docs' && !/^https?:\/\/.*(vuetifyjs)/.test(v)) {
+          return 'Please use vuetifyjs.com links for documentation issues'
+        }
+        if (vm.newIssue.repository.value !== 'docs' && !/^https?:\/\/.*(github|codepen|jsfiddle|codesandbox)/.test(v)) {
           return 'Please only use Codepen, JSFiddle, CodeSandbox or a github repo'
         }
         if (/^https?:\/\/github.com\/vuetifyjs\/?/.test(v)) {
@@ -244,16 +263,28 @@ export default {
         return true
       }
     },
-    types: [
+    repositories: [
       {
-        text: 'Bug Report',
-        value: 'bug'
-      }, {
-        text: 'Feature Request',
-        value: 'feature'
+        name: 'Vuetify',
+        value: 'vuetify',
+        url: '/vuetifyjs/vuetify/issues/new'
+      },
+      {
+        name: 'Vuetify Documentation',
+        value: 'docs',
+        url: '/vuetifyjs/vuetify/issues/new'
+      },
+      {
+        name: 'Vue CLI Plugin',
+        value: 'vue-cli-plugin-vuetify',
+        url: '/vuetifyjs/vue-cli-plugin-vuetify/issues/new'
+      },
+      {
+        name: 'Vuetify Loader',
+        value: 'vuetify-loader',
+        url: '/vuetifyjs/vuetify-loader/issues/new'
       }
     ],
-    repositories: [],
     similarIssues: [],
     operatingSystems: [
       currentOSItem,
@@ -273,12 +304,11 @@ export default {
       'Opera',
       'Other'
     ],
-    linkHint: 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank" tabindex="-1">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank" tabindex="-1">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener" tabindex="-1">CodeSandbox</a> or a github repo',
     markdownHint: markdownHint,
     problemHint: `Please describe your use case, what this feature would solve, and the potential end user benefits of the request. ${markdownHint}`,
     solutionHint: `Please describe your potential solution or change needed to implement this feature. Code samples and API suggestions are welcome. ${markdownHint}`,
     newIssue: {
-      type: '',
+      type: 'bug',
       repository: '',
       title: '',
       vueVersion: '',
@@ -300,8 +330,7 @@ export default {
     vuetifyTags: {},
     showError: false,
     vuetifyLoading: false,
-    vueLoading: false,
-    reposLoading: false
+    vueLoading: false
   }),
 
   computed: {
@@ -309,13 +338,22 @@ export default {
       return this.newIssue.vuetifyVersion && this.newIssue.vuetifyVersion !== this.vuetifyLatest
         ? `Please check if bug exists on ${this.vuetifyLatest} before submitting`
         : ''
+    },
+    reproductionHint () {
+      switch (this.newIssue.repository.value) {
+        case 'vuetify':
+          return 'Please only use <a href="https://template.vuetifyjs.com" rel="noopener" target="_blank" tabindex="-1">Codepen</a>, <a href="https://www.jsfiddle.com" rel="noopener" target="_blank" tabindex="-1">JSFiddle</a>, <a href="https://codesandbox.io/s/vue" target="_blank" rel="noopener" tabindex="-1">CodeSandbox</a> or a github repo'
+        case 'docs':
+          return 'Please provide a link to the relevant documentation page.'
+        default:
+          return ''
+      }
     }
   },
 
   mounted () {
     this.vuetifyLoading = true
     this.vueLoading = true
-    this.reposLoading = true
 
     api.get('versions/vuetify').then(res => {
       this.vuetifyTags = res.data.tags
@@ -324,21 +362,14 @@ export default {
     }).catch(err => {
       this.showError = true
       console.error(err.message)
-    }).then(() => this.vuetifyLoading = false)
+    }).then(() => { this.vuetifyLoading = false })
 
     api.get('versions/vue').then(res => {
       this.vueVersions = res.data.versions
     }).catch(err => {
       this.showError = true
       console.error(err.message)
-    }).then(() => this.vueLoading = false)
-
-    api.get('repositories').then(res => {
-      this.repositories = res.data.repositories
-    }).catch(err => {
-      this.showError = true
-      console.error(err.message)
-    }).then(() => this.reposLoading = false)
+    }).then(() => { this.vueLoading = false })
   },
 
   methods: {
@@ -359,9 +390,11 @@ export default {
     clearAll () {
       this.$refs.form.reset()
       this.newIssue = this.$options.data().newIssue
+      this.similarIssues = []
     },
     preview () {
       this.isPreviewing = this.$refs.form.validate()
+      if (!this.isPreviewing) this.$vuetify.goTo(this.$refs.form)
     }
   }
 }

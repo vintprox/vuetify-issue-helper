@@ -1,20 +1,22 @@
 <template functional>
-  <v-container grid-list-md>
-    <v-layout row wrap>
-      <v-flex xs12>
+  <v-container>
+    <v-row>
+      <v-col cols="4" offset="4">
         <v-card>
-          <v-card-title class="red darken-3 white--text subheading" primary-title>
-            <span class="title">Oops!</span>
+          <v-card-title class="info white--text subheading" primary-title>
+            <span class="title">Oops</span>
           </v-card-title>
-          <v-card-text>
-            Looks like you're in uncharted territory. We don't know about this page yet.
-            Luckily, we know the way back.
+          <v-card-text class="display-1 ma-7 text-center">
+            404. There is no page here.
           </v-card-text>
           <v-card-actions>
-            <v-btn flat class="red darken-3 white--text" to="/">Back</v-btn>
+            <v-btn text block class="info darken-3 white--text" to="/">
+              <v-icon left v-text="'mdi-arrow-left'" />
+              Back
+            </v-btn>
           </v-card-actions>
         </v-card>
-      </v-flex>
-    </v-layout>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
