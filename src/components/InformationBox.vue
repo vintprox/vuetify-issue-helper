@@ -18,9 +18,10 @@
             <li>Have been closed without a solution. Please create a new issue instead of commenting on the old one.</li>
           </ul>
         </li>
-        <li>Create a minimal reproduction to illustrate the issue. Here's a <a href="https://template.vuetifyjs.com">CodePen template</a> to start you off.
+        <li>Create a minimal reproduction to illustrate the issue. Here's a <a href="https://template.vuetifyjs.com" target="_blank">CodePen template</a> to start you off.
           <ul>
-            <li>If you need a full project to reproduce, consider <a href="https://codesandbox.io/s/vue">CodeSandbox</a></li>
+            <li>If you need a full project to reproduce, consider <a href="https://codesandbox.io/s/vue" target="_blank">CodeSandbox</a></li>
+            <li>If you need a reproduction with router, consider <a href="https://codepen.io/johnjleider/pen/PMZvpr" target="_blank">Router Template</a></li>
           </ul>
         </li>
       </ul>
