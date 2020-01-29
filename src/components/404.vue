@@ -25,6 +25,7 @@
         <v-btn
           color="primary"
           x-large
+          to="/"
         >
           Home page
 
