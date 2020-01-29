@@ -15,5 +15,5 @@ export default new Router({
       return { selector: to.hash }
     }
     return { x: 0, y: 0 }
-  }
+  },
 })

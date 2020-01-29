@@ -2,27 +2,27 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <InformationBox class="mt-3"></InformationBox>
+        <information-box class="mt-3" />
       </v-col>
       <v-col cols="12">
-        <NewIssueForm></NewIssueForm>
+        <new-issue-form />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import InformationBox from './InformationBox'
-import NewIssueForm from './NewIssueForm'
+  import InformationBox from './InformationBox'
+  import NewIssueForm from './NewIssueForm'
 
-export default {
-  name: 'issue-creator',
+  export default {
+    name: 'IssueCreator',
 
-  components: {
-    InformationBox,
-    NewIssueForm
+    components: {
+      InformationBox,
+      NewIssueForm,
+    },
   }
-}
 </script>
 
 <style lang="sass" scoped>

@@ -1,7 +1,7 @@
 export default {
   generateMarkdown,
   generateBugMarkdown,
-  generateFeatureMarkdown
+  generateFeatureMarkdown,
 }
 
 export function generateMarkdown (data) {
@@ -15,9 +15,9 @@ export function generateMarkdown (data) {
 }
 
 function generateBugMarkdown (data) {
-  const other = data.other ? `### Other comments\n${data.other}\n\n` : ``
-  const vuetifyVersion = data.vuetifyVersion ? `**Vuetify Version:** ${data.vuetifyVersion}` : ``
-  const vueVersion = data.vueVersion ? `**Vue Version:** ${data.vueVersion}` : ``
+  const other = data.other ? `### Other comments\n${data.other}\n\n` : ''
+  const vuetifyVersion = data.vuetifyVersion ? `**Vuetify Version:** ${data.vuetifyVersion}` : ''
+  const vueVersion = data.vueVersion ? `**Vue Version:** ${data.vueVersion}` : ''
   return `
 ### Environment
 ${vuetifyVersion}${data.previousVersion == null ? '' : `
