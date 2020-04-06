@@ -87,21 +87,13 @@
       },
       genGithubUrl () {
         const body = generateMarkdown(this.genTransformedIssue())
-        const returnUrl = format({
+        this.githubUrl = format({
           protocol: 'https',
           host: 'github.com',
           pathname: this.issue.repository.url,
           query: {
             title: this.issueTitle,
             body,
-          },
-        })
-        this.githubUrl = format({
-          protocol: 'https',
-          host: 'github.com',
-          pathname: '/login',
-          query: {
-            return_to: returnUrl,
           },
         })
       },
